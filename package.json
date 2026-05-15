@@ -1,0 +1,13 @@
+{
+  "name": "home-balance",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install && npm --prefix server run build && npm --prefix server exec -- prisma db push --accept-data-loss",
+    "start": "npm --prefix server start"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

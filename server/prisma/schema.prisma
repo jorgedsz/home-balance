@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id           String        @id @default(cuid())
+  name         String
+  type         String        // "checking" | "savings" | "credit_card" | "cash" | "other"
+  currency     String        // ISO code: "COP", "USD", "EUR", etc.
+  balance      Float         @default(0)
+  notes        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  bills        Bill[]
+  transactions Transaction[]
+}
+
+model Bill {
+  id           String        @id @default(cuid())
+  name         String
+  category     String?       // "rent" | "utilities" | "subscriptions" | "loan" | "insurance" | "other"
+  totalAmount  Float         // Total over all cuotas
+  cuotas       Int           // 1..36
+  startDate    DateTime      // First cuota date
+  currency     String        // ISO code
+  notes        String?
+  accountId    String?       // Optional source account (for auto-egreso creation)
+  account      Account?      @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([startDate])
+}
+
+model Transaction {
+  id           String   @id @default(cuid())
+  type         String   // "ingreso" | "egreso"
+  amount       Float    // Positive number; sign is implied by type
+  currency     String
+  date         DateTime
+  category     String?
+  description  String?
+  accountId    String?
+  account      Account? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  billId       String?  // Set when this transaction was auto-generated from a Bill cuota
+  bill         Bill?    @relation(fields: [billId], references: [id], onDelete: SetNull)
+  cuotaNumber  Int?     // 1..N when billId is set
+  isPaid       Boolean  @default(true) // false for unpaid scheduled cuotas
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([date])
+  @@index([type, date])
+  @@index([billId])
+}

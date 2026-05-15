@@ -1,0 +1,21 @@
+# Railway / Nixpacks build config.
+# Builds the client into client/dist, installs the server, generates the
+# Prisma client, and pushes the schema to the configured DATABASE_URL.
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = [
+  "npm --prefix client install",
+  "npm --prefix server install"
+]
+
+[phases.build]
+cmds = [
+  "npm --prefix client run build",
+  "npm --prefix server exec -- prisma generate",
+  "npm --prefix server exec -- prisma db push --accept-data-loss"
+]
+
+[start]
+cmd = "npm --prefix server start"
