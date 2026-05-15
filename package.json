@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "install:all": "npm --prefix server install && npm --prefix client install",
-    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install && npm --prefix server run build && npm --prefix server exec -- prisma db push --accept-data-loss",
+    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install && npm --prefix server run prisma:push",
     "start": "npm --prefix server start"
   },
   "engines": {

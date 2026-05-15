@@ -9,7 +9,7 @@
     "build": "prisma generate",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push",
+    "prisma:push": "prisma db push --accept-data-loss",
     "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
